@@ -1,22 +1,32 @@
+import { useState, useEffect } from 'react'
 import ProfileCard from "./components/ProfileCard"
 
 function App() {
+  const [githubData, setGithubData] = useState(null)
+  const username = "KanchaiT"
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${username}`)
+    .then(res => res.json())
+    .then(data => {
+      setGithubData(data)
+    })
+    .catch(err => console.error(err))
+  }, []) // [] = ให้ทำแค่ครั้งเดียวตอนโหลดหน้าเว็บ
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <h1>My Team Portfolio</h1>
+        <h1>My First React App</h1>
 
-        <ProfileCard
-           name = 'Kanchai Triyavanich'
-           role = 'Student @ CEDT'
-           bio = 'Progress, not perfection.'
+        {githubData ? (
+          <ProfileCard
+           name = {githubData.name || githubData.login}
+           role = "GitHub User"
+           bio = {githubData.bio || "No bio available"}
         />
-
-        <ProfileCard
-           name = 'Jane Doe'
-           role = 'Guest Developer'
-           bio = 'I love coding and learning new things.'
-        />
+        ) : (
+          <p>Loading data from GitHub...</p>
+        )}
     </div>
   )
 }
