@@ -15,13 +15,32 @@ function App() {
   }
 
   useEffect(() => {
+    // 1. เริ่มต้น Fetch: ให้ Loading เป็น true และ Error เป็น null
+    setLoading(true);
+    setError(null);
+
     fetch(`https://api.github.com/users/${username}`)
-    .then(res => res.json())
-    .then(data => {
-      setGithubData(data)
+    .then(res => {
+      if (!res.ok) {
+        // 2. ตรวจสอบ Status: ถ้าไม่ใช่ 200-299 (เช่น 404) ให้สร้าง Error ออกมา
+        throw new Error("User not found");
+      }
+      return res.json();
     })
-    .catch(err => console.error(err))
-  }, []) // [] = ให้ทำแค่ครั้งเดียวตอนโหลดหน้าเว็บ
+    .then(data => {
+      // 3. กรณีสำเร็จ: เก็บข้อมูล และปิด Loading
+      setGithubData(data);
+      setLoading(false);
+    })
+    .catch(err => {
+      // 4. กรณีผิดพลาด: เก็บข้อความ Error และปิด Loading
+      setError(err.message);
+      setLoading(false);
+    })
+  }, [username]); // เพิ่ม username ตรงนี้เพื่อให้โหลดใหม่ทุกครั้งที่ชื่อเปลี่ยน
+
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
