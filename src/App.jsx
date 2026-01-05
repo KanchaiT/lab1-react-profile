@@ -5,6 +5,15 @@ function App() {
   const [githubData, setGithubData] = useState(null)
   const username = "KanchaiT"
 
+  const [skills, setSkills] = useState(['React', 'Git'])
+  const [newSkill, setNewSkill] = useState("")
+  const addSkill = () => {
+    if (newSkill.trim() !== ""){
+      setSkills([...skills, newSkill]) // สร้าง Array ใหม่จากอันเดิม + ของใหม่
+    }
+    setNewSkill("")
+  }
+
   useEffect(() => {
     fetch(`https://api.github.com/users/${username}`)
     .then(res => res.json())
@@ -24,9 +33,27 @@ function App() {
            role = "GitHub User"
            bio = {githubData.bio || "No bio available"}
         />
+        
         ) : (
           <p>Loading data from GitHub...</p>
         )}
+
+        <h2>Skills</h2>
+        <input 
+        value={newSkill}
+        onChange={(e) => setNewSkill(e.target.value)}
+        placeholder = "Add a skill"
+        />
+
+        <button onClick={addSkill}>Add</button>
+
+        <ul>
+          {skills.map((skill, index) => 
+            <li key={index}>{skill}</li>
+          )}
+        </ul>
+        
+
     </div>
   )
 }
